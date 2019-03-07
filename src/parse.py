@@ -5,14 +5,18 @@ import requests, sys
 from icalendar import Calendar
 from models import *
 
-def get_lessons(url, ext=".ics", nocolor=False):
+def get_lessons(url, ext=".ics", nocolor=False, verbose=False):
 	url = url + ext
+	if verbose:
+		print("[+] url: " + url)
 	try:
 		r = requests.get(url)
 	except requests.exceptions.ConnectionError:
 		print("Failed to establish a new connection: [Errno 11001] getaddrinfo failed")
 		sys.exit(1)
 	lessons = []
+	if verbose:
+		print("[+] status_code: " + str(r.status_code))
 	if r.status_code == 200:
 		text = r.text
 		try:
@@ -33,7 +37,7 @@ def get_lessons(url, ext=".ics", nocolor=False):
 		return lessons
 	return None
 			
-def parse(lessons, nocolor=False):
+def parse(lessons, nocolor=False, verbose=False):
 	lessons.sort()
 	if lessons == []:
 		return []
@@ -61,18 +65,18 @@ def parse(lessons, nocolor=False):
 
 	return weeks
 	
-def get_current_week(group, nocolor=False):
+def get_current_week(group, nocolor=False, verbose=False):
 	url = 'https://ichronos.net/feed/' + group
-	lessons = get_lessons(url, nocolor=nocolor)
+	lessons = get_lessons(url, nocolor=nocolor, verbose=verbose)
 	if lessons is None:
 		print("An error occured")
 		sys.exit(1)
-	return parse(lessons, nocolor=nocolor)
+	return parse(lessons, nocolor=nocolor, verbose=verbose)
 	
-def get_custom_week(group, week, nocolor=False):
+def get_custom_week(group, week, nocolor=False, verbose=False):
 	url = 'https://ichronos.net/ics/' + group  + '/' + week
-	lessons = get_lessons(url)
+	lessons = get_lessons(url, nocolor=nocolor, verbose=verbose)
 	if lessons is None:
 		print("An error occured")
 		sys.exit(1)
-	return parse(lessons, nocolor=nocolor)
+	return parse(lessons, nocolor=nocolor, verbose=verbose)
