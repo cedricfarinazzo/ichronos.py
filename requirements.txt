@@ -1,3 +1,5 @@
 requests
 icalendar
 datetime
+argparse
+colorama

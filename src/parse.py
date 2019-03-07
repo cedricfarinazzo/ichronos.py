@@ -3,7 +3,7 @@ from icalendar import Calendar, Event
 from datetime import datetime
 from models import *
 
-def get_lessons(url, ext=".ics"):
+def get_lessons(url, ext=".ics", nocolor=False):
 	url = url + ext
 	r = requests.get(url)
 	lessons = []
@@ -18,12 +18,12 @@ def get_lessons(url, ext=".ics"):
 				
 				tsr = component.decoded('dtstart')
 				te = component.decoded('dtend')
-				lesson = Lesson(matter, description, location, tsr, te)
+				lesson = Lesson(matter, description, location, tsr, te, nocolor=nocolor)
 				lessons.append(lesson)
 		return lessons
 	return None
 			
-def parse(lessons):
+def parse(lessons, nocolor=False):
 	lessons.sort()
 	if lessons == []:
 		return []
@@ -32,38 +32,38 @@ def parse(lessons):
 	day = None
 	weeks = []
 	week_cur = 0
-	weeks.append(Week(lessons[0].dtstart.isocalendar()[1]))
+	weeks.append(Week(lessons[0].dtstart.isocalendar()[1], nocolor=nocolor))
 	
 	for c in lessons:
 		if c.dtstart.isocalendar()[1] != weeks[week_cur].week:
 			if day is not None:
 				weeks[week_cur].add_day(day)
 			sday = c.get_day()
-			day = Day(sday)
+			day = Day(sday, nocolor=nocolor)
 			week_cur += 1
-			weeks.append(Week(c.dtstart.isocalendar()[1]))
+			weeks.append(Week(c.dtstart.isocalendar()[1], nocolor=nocolor))
 		if sday != c.get_day():
 			if day is not None:
 				weeks[week_cur].add_day(day)
 			sday = c.get_day()
-			day = Day(sday)
+			day = Day(sday, nocolor=nocolor)
 		day.add_lesson(c)
 
 	return weeks
 	
-def get_current_week(group):
+def get_current_week(group, nocolor=False):
 	url = 'https://ichronos.net/feed/' + group
-	lessons = get_lessons(url)
+	lessons = get_lessons(url, nocolor=nocolor)
 	if lessons is None:
 		pass
-	return parse(lessons)
+	return parse(lessons, nocolor=nocolor)
 	
-def get_custom_week(group, week):
+def get_custom_week(group, week, nocolor=False):
 	url = 'https://ichronos.net/ics/' + group  + '/' + week
 	lessons = get_lessons(url)
 	if lessons is None:
 		pass
-	return parse(lessons)
+	return parse(lessons, nocolor=nocolor)
 
 
 
