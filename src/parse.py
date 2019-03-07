@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import requests, sys
+import requests, sys, time, math
 from icalendar import Calendar
 from models import *
 
@@ -9,11 +9,18 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False):
 	url = url + ext
 	if verbose:
 		print("[+] url: " + url)
+	tstart = time.time()
 	try:
 		r = requests.get(url)
 	except requests.exceptions.ConnectionError:
 		print("Failed to establish a new connection: [Errno 11001] getaddrinfo failed")
 		sys.exit(1)
+	if verbose:
+		print("[+] Get page in " + ("%.3f" % (time.time() - tstart))	+ " seconds")
+		print("[+] Header: ")
+		for key, value in r.headers.items():
+			print("[+]     %s: %s" % (key, value))
+		print("[+]     %s: %d o" % ("Raw size", len(r.content)))
 	lessons = []
 	if verbose:
 		print("[+] status_code: " + str(r.status_code))
