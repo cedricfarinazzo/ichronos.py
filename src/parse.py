@@ -1,6 +1,5 @@
 import requests, sys
-from icalendar import Calendar, Event
-from datetime import datetime
+from icalendar import Calendar
 from models import *
 
 def get_lessons(url, ext=".ics", nocolor=False):
@@ -74,8 +73,3 @@ def get_custom_week(group, week, nocolor=False):
 		print("An error occured")
 		sys.exit(1)
 	return parse(lessons, nocolor=nocolor)
-
-
-
-
-	

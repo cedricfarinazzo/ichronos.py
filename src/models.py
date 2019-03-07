@@ -1,5 +1,4 @@
-from datetime import datetime
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
 class Week:
 	
@@ -41,7 +40,7 @@ class Lesson:
 	def __init__(self, matter, description, location, dtstart, dtend, nocolor=False):
 		self.matter = matter
 		self.description = description
-		self.location = location 
+		self.location = location
 		self.dtstart = dtstart
 		self.dtend = dtend
 		self.nocolor = nocolor
@@ -78,7 +77,7 @@ class Lesson:
 	def __ge__(self, other):
 		"""Defines behavior for the greater-than-or-equal-to operator, >=."""
 		return (self > other) or (self == other)
-		
+
 	def get_day(self):
 		return self.dtstart.strftime('%d %b %Y')
 

@@ -24,6 +24,6 @@ def main():
 		weeks = parse.get_custom_week(args.group, str(args.week), nocolor=args.nocolor)
 		for w in weeks:
 			print(w)
-	
+
 if __name__ == '__main__':
 	main()
