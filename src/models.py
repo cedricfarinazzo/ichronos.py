@@ -52,7 +52,7 @@ class Lesson:
 		return "- " + GRN + str(self.matter) + Style.RESET_ALL + \
 		" | " + RED + str(self.location) + Style.RESET_ALL + \
 		" | " + self.dtstart.strftime('%d %b %Y : %H:%M') + \
-		" | " + self.dtend.strftime('%d %b %Y : %H:%M') + \
+		" -> " + self.dtend.strftime('%d %b %Y : %H:%M') + \
 		" | " + str(self.description)
 		
 	def __eq__(self, other):
