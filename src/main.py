@@ -37,7 +37,7 @@ def main():
         weeks = parse.get_current_week(args.group, nocolor=args.nocolor, verbose=args.verbose)
     else:
         weeks = parse.get_custom_week(args.group, str(args.week), nocolor=args.nocolor, verbose=args.verbose)
- 
+
     if args.json:
         j = []
         for w in weeks:

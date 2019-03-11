@@ -16,7 +16,7 @@ class Week:
         for d in self.days:
             out += str(d) + "\n\n"
         return out
-    
+
     def toDict(self):
         w = {}
         w["week"] = str(self.week)
