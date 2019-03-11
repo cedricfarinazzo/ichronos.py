@@ -41,7 +41,7 @@ class Day:
         for l in self.lessons:
             out += str(l) + "\n"
         return out
-    
+
     def toDict(self):
         d = {}
         d["day"] = str(self.day)
@@ -78,8 +78,8 @@ class Lesson:
         l["matter"] = self.matter
         l["location"] = self.location
         l["description"] = self.description
-        l["dtstart"] = self.dtstart.strftime('%d %b %Y : %H:%M') 
-        l["dtend"] = self.dtend.strftime('%d %b %Y : %H:%M') 
+        l["dtstart"] = self.dtstart.strftime('%d %b %Y : %H:%M')
+        l["dtend"] = self.dtend.strftime('%d %b %Y : %H:%M')
         return l
 
     def __eq__(self, other):

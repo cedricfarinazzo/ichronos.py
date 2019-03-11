@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import requests, sys, time, math
+import requests, sys, time
 from icalendar import Calendar
 from models import *
 
@@ -88,3 +88,4 @@ def get_custom_week(group, week, nocolor=False, verbose=False):
         print("An error occured")
         sys.exit(1)
     return parse(lessons, nocolor=nocolor, verbose=verbose)
+
