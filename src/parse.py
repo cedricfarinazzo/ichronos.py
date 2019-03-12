@@ -22,11 +22,15 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
         lastupdate_file = os.path.getctime(filcache)
         difftime = time.time() - lastupdate_file
         if difftime < 3600 * 24:
-            if verbose:
-                print("[+] cache file: " + filcache)
-            with open(filcache, 'r') as f:
-                text = f.read()
-            isCached = text != ""
+            try:
+                with open(filcache, 'r') as f:
+                    text = f.read()
+                isCached = text != ""
+                if verbose:
+                    print("[+] cache file: " + filcache)
+            except:
+                if verbose:
+                    print("[+] Cannot read cache")
 
     if not isCached:
         if verbose:
@@ -47,11 +51,14 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
         text = r.text
         isDownload = text != "" and r.status_code == 200
         if cache and r.status_code == 200:
-            if verbose:
-                print("[+] cache file created: " + filcache)
-            with open(filcache, 'w') as f:
-                f.write(r.text)
-
+            try:
+                with open(filcache, 'w') as f:
+                    f.write(r.text)
+                if verbose:
+                    print("[+] cache file created: " + filcache)
+            except:
+                if verbose:
+                    print("[+] Cannot write file")
     lessons = []
     if isDownload or isCached:
         try:
