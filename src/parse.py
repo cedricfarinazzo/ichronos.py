@@ -4,27 +4,56 @@
 import requests, sys, time
 from icalendar import Calendar
 from models import *
+import os, tempfile
 
-def get_lessons(url, ext=".ics", nocolor=False, verbose=False):
+def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
     url = url + ext
-    if verbose:
-        print("[+] url: " + url)
-    tstart = time.time()
-    try:
-        r = requests.get(url)
-    except requests.exceptions.ConnectionError:
-        print("Failed to establish a new connection: [Errno 11001] getaddrinfo failed")
-        sys.exit(1)
-    if verbose:
-        print("[+] Get page in " + ("%.3f" % (time.time() - tstart))	+ " seconds")
-        print("[+] Header: ")
-        for key, value in r.headers.items():
-            print("[+]     %s: %s" % (key, value))
-        print("[+]     %s: %d o" % ("Raw size", len(r.content)))
-        print("[+] status_code: " + str(r.status_code))
-    lessons = []
-    if r.status_code == 200:
+    urlf = url.replace("https", "")
+    urlf = urlf.replace("http", "")
+    urlf = urlf.replace("://", "")
+    urlf = urlf.replace("/", "_")
+    filcache = os.path.join(tempfile.gettempdir(), urlf)
+    
+    isCached = False
+    isDownload = False
+    text = ""
+
+    if cache and os.path.exists(filcache):
+        lastupdate_file = os.path.getctime(filcache)
+        difftime = time.time() - lastupdate_file
+        if difftime < 3600 * 24:
+            if verbose:
+                print("[+] cache file: " + filcache)
+            with open(filcache, 'r') as f:
+                text = f.read()
+            isCached = text != ""
+    
+    if not isCached:
+        if verbose:
+            print("[+] url: " + url)
+        tstart = time.time()
+        try:
+            r = requests.get(url)
+        except requests.exceptions.ConnectionError:
+            print("Failed to establish a new connection: [Errno 11001] getaddrinfo failed")
+            sys.exit(1)
+        if verbose:
+            print("[+] Get page in " + ("%.3f" % (time.time() - tstart))	+ " seconds")
+            print("[+] Header: ")
+            for key, value in r.headers.items():
+                print("[+]     %s: %s" % (key, value))
+            print("[+]     %s: %d o" % ("Raw size", len(r.content)))
+            print("[+] status_code: " + str(r.status_code))
         text = r.text
+        isDownload = text != "" and r.status_code == 200
+        if cache and r.status_code == 200:
+            if verbose:
+                print("[+] cache file created: " + filcache)
+            with open(filcache, 'w') as f:
+                f.write(r.text)
+    
+    lessons = []
+    if isDownload or isCached:
         try:
             gcal = Calendar.from_ical(text)
         except ValueError:
