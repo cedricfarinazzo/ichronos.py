@@ -27,6 +27,7 @@ def main():
     argp.add_argument("-v", "--verbosity", dest='verbose', default=False, help="increase output verbosity", action="store_true")
     argp.add_argument("-w", "--week", help="Week id (see more here: https://ichronos.net/about)", type=int)
     argp.add_argument('--json', dest='json', default=False, action='store_true', help='Json output format')
+    argp.add_argument('--nocache', dest='nocache', default=False, action='store_true', help='Disable cache system')
     argp.add_argument('--nocolor', dest='nocolor', default=False, action='store_true', help='Argument to disable colored output')
     argp.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
@@ -34,9 +35,9 @@ def main():
 
     weeks = None
     if args.week is None:
-        weeks = parse.get_current_week(args.group, nocolor=args.nocolor, verbose=args.verbose)
+        weeks = parse.get_current_week(args.group, nocolor=args.nocolor, verbose=args.verbose, cache=(not args.nocache))
     else:
-        weeks = parse.get_custom_week(args.group, str(args.week), nocolor=args.nocolor, verbose=args.verbose)
+        weeks = parse.get_custom_week(args.group, str(args.week), nocolor=args.nocolor, verbose=args.verbose, cache=(not args.nocache))
 
     if args.json:
         j = []

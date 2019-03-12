@@ -13,7 +13,7 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
     urlf = urlf.replace("://", "")
     urlf = urlf.replace("/", "_")
     filcache = os.path.join(tempfile.gettempdir(), urlf)
-    
+
     isCached = False
     isDownload = False
     text = ""
@@ -27,7 +27,7 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
             with open(filcache, 'r') as f:
                 text = f.read()
             isCached = text != ""
-    
+
     if not isCached:
         if verbose:
             print("[+] url: " + url)
@@ -51,7 +51,7 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
                 print("[+] cache file created: " + filcache)
             with open(filcache, 'w') as f:
                 f.write(r.text)
-    
+
     lessons = []
     if isDownload or isCached:
         try:
@@ -102,17 +102,17 @@ def parse(lessons, nocolor=False, verbose=False):
 
     return weeks
 
-def get_current_week(group, nocolor=False, verbose=False):
+def get_current_week(group, nocolor=False, verbose=False, cache=True):
     url = 'https://ichronos.net/feed/' + group
-    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose)
+    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
     if lessons is None:
         print("An error occured")
         sys.exit(1)
     return parse(lessons, nocolor=nocolor, verbose=verbose)
 
-def get_custom_week(group, week, nocolor=False, verbose=False):
+def get_custom_week(group, week, nocolor=False, verbose=False, cache=True):
     url = 'https://ichronos.net/ics/' + group  + '/' + week
-    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose)
+    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
     if lessons is None:
         print("An error occured")
         sys.exit(1)
