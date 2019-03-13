@@ -4,32 +4,26 @@
 import requests, sys, time
 from icalendar import Calendar
 from models import *
+from utils import *
 import os, tempfile
 
 def get_lessons(url, ext=".ics", verbose=False, cache=True):
     url = url + ext
+    
     urlf = url.replace("https", "").replace("http", "").replace("://", "").replace("/", "_")
     filecache = os.path.join(tempfile.gettempdir(), urlf)
 
-    isCached = False
-    isDownload = False
+    fromCache = False
+    fromWeb = False
     text = ""
 
-    if cache and os.path.exists(filecache):
-        lastupdate_file = os.path.getctime(filecache)
-        difftime = time.time() - lastupdate_file
-        if difftime < 3600 * 24:
-            try:
-                with open(filecache, 'r') as f:
-                    text = f.read()
-                isCached = text != ""
-                if verbose:
-                    print("[+] cache file: " + filecache)
-            except:
-                if verbose:
-                    print("[+] Cannot read cache")
+    if cache:
+        data = readCache(filecache, verbose=verbose)
+        if data is not None:
+            text = data
+            fromCache = True
 
-    if not isCached:
+    if not fromCache:
         if verbose:
             print("[+] url: " + url)
         tstart = time.time()
@@ -46,18 +40,12 @@ def get_lessons(url, ext=".ics", verbose=False, cache=True):
             print("[+]     %s: %d o" % ("Raw size", len(r.content)))
             print("[+] status_code: " + str(r.status_code))
         text = r.text
-        isDownload = text != "" and r.status_code == 200
-        if cache and r.status_code == 200:
-            try:
-                with open(filecache, 'w') as f:
-                    f.write(r.text)
-                if verbose:
-                    print("[+] cache file created: " + filecache)
-            except:
-                if verbose:
-                    print("[+] Cannot write file")
+        fromWeb = text != "" and r.status_code == 200
+        if cache and fromWeb:
+            writeCache(filecache, text, verbose=verbose)
+    
     lessons = []
-    if isDownload or isCached:
+    if fromWeb or fromCache:
         try:
             gcal = Calendar.from_ical(text)
         except ValueError:
