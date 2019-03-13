@@ -39,7 +39,6 @@ def main():
         return
     
     config = {"nocolor": args.nocache, "verbose": args.verbose, "cache": not args.nocache}
-    print(args)
     
     obj = None
     if args.week is not None:
