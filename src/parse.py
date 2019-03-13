@@ -109,8 +109,12 @@ def parse(lessons, nocolor=False, verbose=False):
 
     return weeks
 
+	
+def escape_groupe(group):
+    return group.replace('#', '%23')
+
 def get_current_week(group, nocolor=False, verbose=False, cache=True):
-    url = 'https://ichronos.net/feed/' + group
+    url = 'https://ichronos.net/feed/' + escape_groupe(group)
     lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
     if lessons is None:
         print("An error occured")
@@ -118,7 +122,7 @@ def get_current_week(group, nocolor=False, verbose=False, cache=True):
     return parse(lessons, nocolor=nocolor, verbose=verbose)
 
 def get_custom_week(group, week, nocolor=False, verbose=False, cache=True):
-    url = 'https://ichronos.net/ics/' + group  + '/' + week
+    url = 'https://ichronos.net/ics/' + escape_groupe(group)  + '/' + week
     lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
     if lessons is None:
         print("An error occured")
