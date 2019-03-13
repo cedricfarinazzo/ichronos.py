@@ -39,20 +39,23 @@ def main():
         return
     
     config = {"nocolor": args.nocache, "verbose": args.verbose, "cache": not args.nocache}
+    print(args)
     
-    weeks = None
-    if args.week is None:
-        weeks = get_current_week(args.group, config)
+    obj = None
+    if args.week is not None:
+        obj = get_custom_week(args.group, config)
+    elif args.today:
+        obj = get_today(args.group, config)
     else:
-        weeks = get_custom_week(args.group, config)
+        obj = get_current_week(args.group, config)
 
     if args.json:
         j = []
-        for w in weeks:
+        for w in obj:
             j.append(w.toDict())
         print(json.dumps(j))
     else:
-        for w in weeks:
+        for w in obj:
             w.print(nocolor=config["nocolor"])
 
 if __name__ == '__main__':
