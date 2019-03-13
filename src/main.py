@@ -25,19 +25,26 @@ def main():
 
     argp.add_argument("group", help=" Group name of your class (ex: INFOS4A1-1)", type=str)
     argp.add_argument("-v", "--verbosity", dest='verbose', default=False, help="increase output verbosity", action="store_true")
-    argp.add_argument("-w", "--week", help="Week id (see more here: https://ichronos.net/about)", type=int)
+    argp.add_argument("-w", "--week", help="Show the schedule of the week. Argument: Week id (see more here: https://ichronos.net/about)", type=int)
+    argp.add_argument("-t", "--today", default=False, action='store_true', help="Show today's schedule")
     argp.add_argument('--json', dest='json', default=False, action='store_true', help='Json output format')
     argp.add_argument('--nocache', dest='nocache', default=False, action='store_true', help='Disable cache system')
     argp.add_argument('--nocolor', dest='nocolor', default=False, action='store_true', help='Argument to disable colored output')
     argp.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     args = argp.parse_args()
-
+    
+    if args.today and args.week is not None:
+        argp.print_help()
+        return
+    
+    config = {"nocolor": args.nocache, "verbose": args.verbose, "cache": not args.nocache}
+    
     weeks = None
     if args.week is None:
-        weeks = parse.get_current_week(args.group, nocolor=args.nocolor, verbose=args.verbose, cache=(not args.nocache))
+        weeks = parse.get_current_week(args.group, config)
     else:
-        weeks = parse.get_custom_week(args.group, str(args.week), nocolor=args.nocolor, verbose=args.verbose, cache=(not args.nocache))
+        weeks = parse.get_custom_week(args.group, config)
 
     if args.json:
         j = []
@@ -46,7 +53,7 @@ def main():
         print(json.dumps(j))
     else:
         for w in weeks:
-            print(w)
+            w.print(nocolor=config["nocolor"])
 
 if __name__ == '__main__':
     main()

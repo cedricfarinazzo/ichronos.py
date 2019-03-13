@@ -6,28 +6,25 @@ from icalendar import Calendar
 from models import *
 import os, tempfile
 
-def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
+def get_lessons(url, ext=".ics", verbose=False, cache=True):
     url = url + ext
-    urlf = url.replace("https", "")
-    urlf = urlf.replace("http", "")
-    urlf = urlf.replace("://", "")
-    urlf = urlf.replace("/", "_")
-    filcache = os.path.join(tempfile.gettempdir(), urlf)
+    urlf = url.replace("https", "").replace("http", "").replace("://", "").replace("/", "_")
+    filecache = os.path.join(tempfile.gettempdir(), urlf)
 
     isCached = False
     isDownload = False
     text = ""
 
-    if cache and os.path.exists(filcache):
-        lastupdate_file = os.path.getctime(filcache)
+    if cache and os.path.exists(filecache):
+        lastupdate_file = os.path.getctime(filecache)
         difftime = time.time() - lastupdate_file
         if difftime < 3600 * 24:
             try:
-                with open(filcache, 'r') as f:
+                with open(filecache, 'r') as f:
                     text = f.read()
                 isCached = text != ""
                 if verbose:
-                    print("[+] cache file: " + filcache)
+                    print("[+] cache file: " + filecache)
             except:
                 if verbose:
                     print("[+] Cannot read cache")
@@ -52,10 +49,10 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
         isDownload = text != "" and r.status_code == 200
         if cache and r.status_code == 200:
             try:
-                with open(filcache, 'w') as f:
+                with open(filecache, 'w') as f:
                     f.write(r.text)
                 if verbose:
-                    print("[+] cache file created: " + filcache)
+                    print("[+] cache file created: " + filecache)
             except:
                 if verbose:
                     print("[+] Cannot write file")
@@ -74,12 +71,12 @@ def get_lessons(url, ext=".ics", nocolor=False, verbose=False, cache=True):
 
                 tsr = component.decoded('dtstart')
                 te = component.decoded('dtend')
-                lesson = Lesson(matter, description, location, tsr, te, nocolor=nocolor)
+                lesson = Lesson(matter, description, location, tsr, te)
                 lessons.append(lesson)
         return lessons
     return None
 
-def parse(lessons, nocolor=False, verbose=False):
+def parse(lessons):
     lessons.sort()
     if lessons == []:
         return []
@@ -88,44 +85,48 @@ def parse(lessons, nocolor=False, verbose=False):
     day = None
     weeks = []
     week_cur = 0
-    weeks.append(Week(lessons[0].dtstart.isocalendar()[1], nocolor=nocolor))
+    weeks.append(Week(lessons[0].dtstart.isocalendar()[1]))
 
     for c in lessons:
         if c.dtstart.isocalendar()[1] != weeks[week_cur].week:
             if day is not None:
                 weeks[week_cur].add_day(day)
             sday = c.get_day()
-            day = Day(sday, nocolor=nocolor)
+            day = Day(sday)
             week_cur += 1
-            weeks.append(Week(c.dtstart.isocalendar()[1], nocolor=nocolor))
+            weeks.append(Week(c.dtstart.isocalendar()[1]))
         if sday != c.get_day():
             if day is not None:
                 weeks[week_cur].add_day(day)
             sday = c.get_day()
-            day = Day(sday, nocolor=nocolor)
+            day = Day(sday)
         day.add_lesson(c)
     if day.lessons != []:
         weeks[week_cur].add_day(day)
 
     return weeks
 
-	
 def escape_groupe(group):
     return group.replace('#', '%23')
-
-def get_current_week(group, nocolor=False, verbose=False, cache=True):
+    
+def get_current_week(group, config):
     url = 'https://ichronos.net/feed/' + escape_groupe(group)
-    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
+    lessons = get_lessons(url, verbose=config["verbose"], cache=config["cache"])
     if lessons is None:
         print("An error occured")
         sys.exit(1)
-    return parse(lessons, nocolor=nocolor, verbose=verbose)
+    return parse(lessons)
 
-def get_custom_week(group, week, nocolor=False, verbose=False, cache=True):
+def get_today(group, config):
+    week = get_current_week(group, config)
+    
+    return week
+    
+def get_custom_week(group, config, week):
     url = 'https://ichronos.net/ics/' + escape_groupe(group)  + '/' + week
-    lessons = get_lessons(url, nocolor=nocolor, verbose=verbose, cache=cache)
+    lessons = get_lessons(url, verbose=config["verbose"], cache=config["cache"])
     if lessons is None:
         print("An error occured")
         sys.exit(1)
-    return parse(lessons, nocolor=nocolor, verbose=verbose)
+    return parse(lessons)
 

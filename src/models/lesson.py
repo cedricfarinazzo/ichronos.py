@@ -3,75 +3,24 @@
 
 from colorama import Fore, Style
 
-class Week:
-
-    def __init__(self, week, nocolor=False):
-        self.days = []
-        self.week = week
-        self.nocolor = nocolor
-
-    def __str__(self):
-        CYAN = "" if self.nocolor else Fore.CYAN
-        out = CYAN + " ---- Week N°%d ---- " %(self.week) + Style.RESET_ALL + "\n\n"
-        for d in self.days:
-            out += str(d) + "\n\n"
-        return out
-
-    def toDict(self):
-        w = {}
-        w["week"] = str(self.week)
-        w["days"] = []
-        for d in self.days:
-            w["days"].append(d.toDict())
-        return w
-
-    def add_day(self, day):
-        self.days.append(day)
-
-class Day:
-
-    def __init__(self, day, nocolor=False):
-        self.lessons = []
-        self.day = day
-        self.nocolor = nocolor
-
-    def __str__(self):
-        YEL = "" if self.nocolor else Fore.YELLOW
-        out = YEL + " => %s " %(self.day) + Style.RESET_ALL + "\n"
-        for l in self.lessons:
-            out += str(l) + "\n"
-        return out
-
-    def toDict(self):
-        d = {}
-        d["day"] = str(self.day)
-        d["lessons"] = []
-        for l in self.lessons:
-            d["lessons"].append(l.toDict())
-        return d
-
-    def add_lesson(self, lesson):
-        self.lessons.append(lesson)
-
-
 class Lesson:
 
-    def __init__(self, matter, description, location, dtstart, dtend, nocolor=False):
+    def __init__(self, matter, description, location, dtstart, dtend):
         self.matter = matter
         self.description = description
         self.location = location
         self.dtstart = dtstart
         self.dtend = dtend
-        self.nocolor = nocolor
 
-    def __str__(self):
-        GRN = "" if self.nocolor else Fore.GREEN
-        RED = "" if self.nocolor else Fore.RED
-        return "- " + GRN + str(self.matter) + Style.RESET_ALL + \
-                " | " + RED + str(self.location) + Style.RESET_ALL + \
+    def print(self, nocolor=False):
+        GRN = "" if nocolor else Fore.GREEN
+        RED = "" if nocolor else Fore.RED
+        RESET_ALL = "" if nocolor else Style.RESET_ALL
+        print("- " + GRN + str(self.matter) + RESET_ALL + \
+                " | " + RED + str(self.location) + RESET_ALL + \
                 " | " + self.dtstart.strftime('%d %b %Y : %H:%M') + \
                 " -> " + self.dtend.strftime('%d %b %Y : %H:%M') + \
-                " | " + str(self.description)
+                " | " + str(self.description))
 
     def toDict(self):
         l = {}
@@ -111,4 +60,3 @@ class Lesson:
 
     def get_date(self):
         return self.dtstart.strftime('%d %b %Y : %H:%M')
-
