@@ -16,7 +16,7 @@ import argparse
 import json
 from colorama import init
 init()
-import parse
+from utils import *
 from models import *
 
 def main():
@@ -42,9 +42,9 @@ def main():
     
     weeks = None
     if args.week is None:
-        weeks = parse.get_current_week(args.group, config)
+        weeks = get_current_week(args.group, config)
     else:
-        weeks = parse.get_custom_week(args.group, config)
+        weeks = get_custom_week(args.group, config)
 
     if args.json:
         j = []
