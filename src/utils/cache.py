@@ -24,7 +24,12 @@ def readCache(file, verbose=False, expire=3600*24):
             print("[+] Cannot read cache")
     return None
         
-def writeCache(file, data, verbose=False, expire=3600*24):
+def writeCache(file, data, verbose=False):
+    try:
+        if os.path.exists(file):
+            os.remove(file)
+    except:
+        pass
     try:
         with open(file, 'w') as f:
             f.write(data)
@@ -34,4 +39,4 @@ def writeCache(file, data, verbose=False, expire=3600*24):
     except IOError:
         if verbose:
             print("[+] Cannot write file")
-    return False
+        return False

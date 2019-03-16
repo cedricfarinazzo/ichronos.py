@@ -38,7 +38,7 @@ def main():
         argp.print_help()
         return
     
-    config = {"nocolor": args.nocache, "verbose": args.verbose, "cache": not args.nocache}
+    config = {"nocolor": args.nocolor, "verbose": args.verbose, "cache": not args.nocache}
     
     obj = None
     if args.week is not None:

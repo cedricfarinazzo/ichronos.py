@@ -13,6 +13,8 @@ class Day:
         YEL = "" if nocolor else Fore.YELLOW
         RESET_ALL = "" if nocolor else Style.RESET_ALL
         print(YEL + " => %s " %(self.day) + RESET_ALL)
+        if self.lessons == []:
+            print(" Nothing today!")
         for l in self.lessons:
             l.print(nocolor=nocolor)
 
